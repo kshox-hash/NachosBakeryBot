@@ -200,4 +200,38 @@ module.exports = class GraphApi {
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
 
+  static async messageWithImageAndButtons(messageId, senderPhoneNumberId, recipientPhoneNumber, imageLink, bodyText, footerText, buttons){
+      const requestBody = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: recipientPhoneNumber,
+            type: "interactive",
+            interactive: {
+              type: "button",
+              header: {
+                type: "image",
+                image: {
+                  link: imageLink,
+                },
+              },
+              body: {
+                text: bodyText,
+              },
+              footer: {
+                text: footerText,
+              },
+              action: {
+                buttons: buttons.map((button) => ({
+                  type: "reply",
+                  reply: {
+                    id: button.id,
+                    title: button.title,
+                  },
+                })),
+              },
+            },
+          };
+          
+    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+    }
 };

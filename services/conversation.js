@@ -15,6 +15,23 @@ const Status = require('./status');
 const Cache = require('./redis');
 
 
+function sendExampleMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody){
+  return GraphApi.messageWithInteractiveReply(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    messageBody ,
+    [
+      {
+
+      }
+    ]
+  )
+}
+
+
+
+
 function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody) {
   return GraphApi.messageWithInteractiveReply(
     messageId,
@@ -81,9 +98,28 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
   );
 }
 
+function sendMessageWithImgAndBtn(messageId, senderPhoneNumberId, recipientPhoneNumber
+
+){
+  return GraphApi.messageWithImageAndButtons(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop",
+    {
+        id: constants.FLOW_MAIN_QUOTE,
+        title: "Cotizar",
+      },
+  )
+}
+
 async function markMessageForFollowUp(messageId) {
   await Cache.insert(messageId);
 }
+
+//==========================================================================
+//CLASS
+//==========================================================================
 
 
 module.exports = class Conversation {
@@ -120,12 +156,18 @@ module.exports = class Conversation {
         await markMessageForFollowUp(ltoResponse.messages[0].id);
         break;
       default:
-        sendTryOutDemoMessage(
+            sendMessageWithImgAndBtn(
+              message.id,
+              senderPhoneNumberId,
+              message.senderPhoneNumber
+            )
+      /**sendTryOutDemoMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
           constants.APP_DEFAULT_MESSAGE
-        );
+        ); */
+        
         break;
     }
   }

@@ -23,5 +23,8 @@ module.exports = Object.freeze({
   // IDs de botones de respuesta
   REPLY_INTERACTIVE_MEDIA_ID: "reply-interactive-with-media",
   REPLY_MEDIA_CAROUSEL_ID: "reply-media-card-carousel",
-  REPLY_OFFER_ID: "reply-offer"
+  REPLY_OFFER_ID: "reply-offer",
+
+
+  FLOW_MAIN_QUOTE : "flow_main_quote"
 });
