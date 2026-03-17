@@ -156,18 +156,14 @@ module.exports = class Conversation {
         await markMessageForFollowUp(ltoResponse.messages[0].id);
         break;
       default:
-            sendMessageWithImgAndBtn(
-              message.id,
-              senderPhoneNumberId,
-              message.senderPhoneNumber
-            )
-      /**sendTryOutDemoMessage(
+
+      
+        sendTryOutDemoMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
           constants.APP_DEFAULT_MESSAGE
-        ); */
-        
+        );
         break;
     }
   }
