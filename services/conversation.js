@@ -86,7 +86,7 @@ function sendMessageWithImgAndBtn(messageId, senderPhoneNumberId, recipientPhone
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
-    "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop",
+    "https://pub-9df4bc34eee249debcd04d6df729879.r2.dev/avatar.png",
     "Automatiza tu negocio por WhatsApp 🚀",
     "Selecciona una opción",
     [
