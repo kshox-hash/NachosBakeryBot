@@ -12,7 +12,7 @@ module.exports = Object.freeze({
   USER_START_MESSAGE: "Toca enviar para comenzar",
 
   // Mensajes de respuesta
-  APP_DEFAULT_MESSAGE: "¡Bienvenido a Chumingo's Bakery! ¿En qué podemos ayudarte hoy?",
+  APP_DEFAULT_MESSAGE: "¡Bienvenido a Automatiza fácil! ¿En qué podemos ayudarte hoy?",
   APP_TRY_ANOTHER_MESSAGE: "¿Hay algo más en lo que podamos ayudarte?",
 
   // Textos de botones (CTA)
