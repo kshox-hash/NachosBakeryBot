@@ -16,9 +16,9 @@ module.exports = Object.freeze({
   APP_TRY_ANOTHER_MESSAGE: "¿Hay algo más en lo que podamos ayudarte?",
 
   // Textos de botones (CTA)
-  REPLY_INTERACTIVE_WITH_MEDIA_CTA: "Comprar en línea",
-  REPLY_MEDIA_CARD_CAROUSEL_CTA: "Ver ideas de recetas",
-  REPLY_OFFER_CTA: "Promoción actual",
+  REPLY_INTERACTIVE_WITH_MEDIA_CTA: "chatbox",
+  REPLY_MEDIA_CARD_CAROUSEL_CTA: "ver funciones",
+  REPLY_OFFER_CTA: "promociones",
 
   // IDs de botones de respuesta
   REPLY_INTERACTIVE_MEDIA_ID: "reply-interactive-with-media",

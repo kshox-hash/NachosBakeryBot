@@ -81,6 +81,30 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
   );
 }
 
+function sendDefaultMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody){
+  return GraphApi.messageWithInteractiveReply(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    messageBody,
+    [
+      {
+        id: constants.REPLY_INTERACTIVE_MEDIA_ID,
+        title: constants.REPLY_INTERACTIVE_WITH_MEDIA_CTA,
+      },
+        
+      {
+        id: constants.REPLY_MEDIA_CAROUSEL_ID,
+        title: constants.REPLY_MEDIA_CARD_CAROUSEL_CTA,
+      },
+      {
+        id: constants.REPLY_OFFER_ID,
+        title: constants.REPLY_OFFER_CTA,
+      }
+    ]
+  );
+}
+
 function sendMessageWithImgAndBtn(messageId, senderPhoneNumberId, recipientPhoneNumber) {
   return GraphApi.messageWithImageAndButtons(
     messageId,
@@ -150,18 +174,18 @@ module.exports = class Conversation {
         break;
       default:
 
-          sendMessageWithImgAndBtn(
-            message.id,
-            senderPhoneNumberId,
-            message.senderPhoneNumber,
-          )
-
+      sendDefaultMessage(
+        message.id,
+        senderPhoneNumberId,
+        message.senderPhoneNumber,
+        constants.APP_DEFAULT_MESSAGE
+      )
       /**
        *   sendTryOutDemoMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
-          constants.APP_DEFAULT_MESSAGE
+          constanZts.APP_DEFAULT_MESSAGE
         );
        
        */
