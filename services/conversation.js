@@ -74,8 +74,8 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
       templateName: "recipe_media_carousel",
       locale: "en_US",
       imageLinks: [
-        "https://scontent.xx.fbcdn.net/mci_ab/uap/asset_manager/id/?ab_b=e&ab_page=AssetManagerID&ab_entry=1389202275965231",
-        "https://scontent.xx.fbcdn.net/mci_ab/uap/asset_manager/id/?ab_b=e&ab_page=AssetManagerID&ab_entry=3255815791260974"
+        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png"
       ]
     }
   );
