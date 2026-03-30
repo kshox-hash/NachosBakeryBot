@@ -332,7 +332,7 @@ module.exports = class GraphApi {
         cards: [
           {
             imageLink:
-              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/generatefix.png",
           },
           {
             imageLink:
