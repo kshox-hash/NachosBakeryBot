@@ -55,7 +55,7 @@ function sendFunctionsTemplateMessage(
       templateName: "generar_documentos_pdf",
       locale: "es",
       imageLink:
-        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/generate.png",
     }
   );
 }
