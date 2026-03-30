@@ -41,7 +41,7 @@ function sendWelcomeMessage(
   );
 }
 
-// Botón Funciones -> manda la plantilla aprobada
+// Botón Funciones -> manda la plantilla aprobada con header image
 function sendFunctionsTemplateMessage(
   messageId,
   senderPhoneNumberId,
@@ -54,8 +54,8 @@ function sendFunctionsTemplateMessage(
     {
       templateName: "generar_documentos_pdf",
       locale: "es",
-      // Si tu plantilla tiene variables en el body, descomenta esto:
-      // bodyParameters: ["cotización"],
+      imageLink:
+        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
     }
   );
 }
@@ -185,7 +185,6 @@ module.exports = class Conversation {
       return;
     }
 
-    // Sin Redis no hacemos seguimiento extra de delivered/read.
     return;
   }
 };
