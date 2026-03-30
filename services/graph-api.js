@@ -308,4 +308,25 @@ module.exports = class GraphApi {
 
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
+
+  static async sendCarouselTemplate(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber
+  ) {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: recipientPhoneNumber,
+      type: "template",
+      template: {
+        name: "automatiza_carousel",
+        language: {
+          code: "es",
+        },
+      },
+    };
+
+    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+  }
 };

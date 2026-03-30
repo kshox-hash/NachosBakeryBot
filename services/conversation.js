@@ -41,22 +41,16 @@ function sendWelcomeMessage(
   );
 }
 
-// Botón Funciones -> manda la plantilla aprobada con header image
+// Botón Funciones -> manda el carrusel aprobado
 function sendFunctionsTemplateMessage(
   messageId,
   senderPhoneNumberId,
   recipientPhoneNumber
 ) {
-  return GraphApi.messageWithUtilityTemplate(
+  return GraphApi.sendCarouselTemplate(
     messageId,
     senderPhoneNumberId,
-    recipientPhoneNumber,
-    {
-      templateName: "generar_documentos_pdf",
-      locale: "es",
-      imageLink:
-        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/generatefix.png",
-    }
+    recipientPhoneNumber
   );
 }
 
