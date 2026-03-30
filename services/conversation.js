@@ -53,7 +53,7 @@ function sendFunctionsTemplateMessage(
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "generar_document",
+      templateName: "generar_documentos_pdf",
       locale: "es_ES",
     }
   );
