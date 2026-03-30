@@ -222,9 +222,8 @@ module.exports = class GraphApi {
         components: [
           {
             type: "carousel",
-            cards: cards.map((card, idx) => ({
-              card_index: idx,
-              components: [
+            cards: cards.map((card, idx) => {
+              const cardComponents = [
                 {
                   type: "header",
                   parameters: [
@@ -236,16 +235,20 @@ module.exports = class GraphApi {
                     },
                   ],
                 },
-                {
+              ];
+
+              if (card.bodyParameters?.length) {
+                cardComponents.push({
                   type: "body",
-                  parameters: [
-                    {
-                      type: "text",
-                      text: card.bodyText,
-                    },
-                  ],
-                },
-                {
+                  parameters: card.bodyParameters.map((value) => ({
+                    type: "text",
+                    text: value,
+                  })),
+                });
+              }
+
+              if (card.urlSuffix) {
+                cardComponents.push({
                   type: "button",
                   sub_type: "url",
                   index: 0,
@@ -255,9 +258,14 @@ module.exports = class GraphApi {
                       text: card.urlSuffix,
                     },
                   ],
-                },
-              ],
-            })),
+                });
+              }
+
+              return {
+                card_index: idx,
+                components: cardComponents,
+              };
+            }),
           },
         ],
       },
@@ -314,19 +322,28 @@ module.exports = class GraphApi {
     senderPhoneNumberId,
     recipientPhoneNumber
   ) {
-    const requestBody = {
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: recipientPhoneNumber,
-      type: "template",
-      template: {
-        name: "automatiza_carousel",
-        language: {
-          code: "es",
-        },
-      },
-    };
-
-    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+    return this.messageWithMediaCardCarousel(
+      messageId,
+      senderPhoneNumberId,
+      recipientPhoneNumber,
+      {
+        templateName: "automatiza_carousel",
+        locale: "es",
+        cards: [
+          {
+            imageLink:
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+          },
+          {
+            imageLink:
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+          },
+          {
+            imageLink:
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+          },
+        ],
+      }
+    );
   }
 };
