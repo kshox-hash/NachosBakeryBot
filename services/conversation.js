@@ -11,7 +11,6 @@ const constants = require("./constants");
 const GraphApi = require("./graph-api");
 const Message = require("./message");
 const Status = require("./status");
-const Cache = require("./redis");
 
 // Mensaje de bienvenida con 3 botones
 function sendWelcomeMessage(
@@ -42,7 +41,7 @@ function sendWelcomeMessage(
   );
 }
 
-// Botón Funciones -> manda la plantilla aprobada generar_document
+// Botón Funciones -> manda la plantilla aprobada
 function sendFunctionsTemplateMessage(
   messageId,
   senderPhoneNumberId,
@@ -54,7 +53,9 @@ function sendFunctionsTemplateMessage(
     recipientPhoneNumber,
     {
       templateName: "generar_documentos_pdf",
-      locale: "es_ES",
+      locale: "es",
+      // Si tu plantilla tiene variables en el body, descomenta esto:
+      // bodyParameters: ["cotización"],
     }
   );
 }
@@ -107,10 +108,6 @@ function sendContactMessage(
   );
 }
 
-async function markMessageForFollowUp(messageId) {
-  await Cache.insert(messageId);
-}
-
 module.exports = class Conversation {
   constructor(phoneNumberId) {
     this.phoneNumberId = phoneNumberId;
@@ -119,47 +116,53 @@ module.exports = class Conversation {
   static async handleMessage(senderPhoneNumberId, rawMessage) {
     const message = new Message(rawMessage);
 
+    console.log("message.type =>", message.type);
+    console.log("message.id =>", message.id);
+    console.log("message.senderPhoneNumber =>", message.senderPhoneNumber);
+
     switch (message.type) {
       case constants.REPLY_FUNCTIONS_ID: {
+        console.log("Entró a REPLY_FUNCTIONS_ID");
+
         const response = await sendFunctionsTemplateMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
 
-        if (response?.messages?.[0]?.id) {
-          await markMessageForFollowUp(response.messages[0].id);
-        }
+        console.log("response funciones =>", response);
         break;
       }
 
       case constants.REPLY_CHATBOX_ID: {
+        console.log("Entró a REPLY_CHATBOX_ID");
+
         const response = await sendChatboxMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
 
-        if (response?.messages?.[0]?.id) {
-          await markMessageForFollowUp(response.messages[0].id);
-        }
+        console.log("response chatbox =>", response);
         break;
       }
 
       case constants.REPLY_CONTACT_ID: {
+        console.log("Entró a REPLY_CONTACT_ID");
+
         const response = await sendContactMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
 
-        if (response?.messages?.[0]?.id) {
-          await markMessageForFollowUp(response.messages[0].id);
-        }
+        console.log("response contacto =>", response);
         break;
       }
 
       default: {
+        console.log("Entró a default");
+
         const response = await sendWelcomeMessage(
           message.id,
           senderPhoneNumberId,
@@ -167,9 +170,7 @@ module.exports = class Conversation {
           constants.APP_DEFAULT_MESSAGE
         );
 
-        if (response?.messages?.[0]?.id) {
-          await markMessageForFollowUp(response.messages[0].id);
-        }
+        console.log("response bienvenida =>", response);
         break;
       }
     }
@@ -178,17 +179,13 @@ module.exports = class Conversation {
   static async handleStatus(senderPhoneNumberId, rawStatus) {
     const status = new Status(rawStatus);
 
+    console.log("status recibido =>", status);
+
     if (!(status.status === "delivered" || status.status === "read")) {
       return;
     }
 
-    if (await Cache.remove(status.messageId)) {
-      await sendWelcomeMessage(
-        undefined,
-        senderPhoneNumberId,
-        status.recipientPhoneNumber,
-        constants.APP_TRY_ANOTHER_MESSAGE
-      );
-    }
+    // Sin Redis no hacemos seguimiento extra de delivered/read.
+    return;
   }
 };

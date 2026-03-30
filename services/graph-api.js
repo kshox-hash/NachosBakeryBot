@@ -32,19 +32,22 @@ module.exports = class GraphApi {
         );
       }
 
+      console.log("Request body =>");
+      console.log(JSON.stringify(requestBody, null, 2));
+
       const response = await api.call(
         "POST",
         [`${senderPhoneNumberId}`, "messages"],
         requestBody
       );
 
-      console.log("API call successful:", response);
+      console.log("API call successful:");
+      console.log(JSON.stringify(response, null, 2));
+
       return response;
     } catch (error) {
-      console.error(
-        "Error making API call:",
-        error?.response?.data || error.message || error
-      );
+      console.error("Error making API call:");
+      console.error(JSON.stringify(error?.response?.data || error, null, 2));
       throw error;
     }
   }
@@ -86,7 +89,38 @@ module.exports = class GraphApi {
     recipientPhoneNumber,
     options
   ) {
-    const { templateName, locale, imageLink } = options;
+    const {
+      templateName,
+      locale,
+      imageLink,
+      bodyParameters = [],
+    } = options;
+
+    const components = [];
+
+    if (imageLink) {
+      components.push({
+        type: "header",
+        parameters: [
+          {
+            type: "image",
+            image: {
+              link: imageLink,
+            },
+          },
+        ],
+      });
+    }
+
+    if (bodyParameters.length > 0) {
+      components.push({
+        type: "body",
+        parameters: bodyParameters.map((value) => ({
+          type: "text",
+          text: value,
+        })),
+      });
+    }
 
     const requestBody = {
       messaging_product: "whatsapp",
@@ -98,19 +132,7 @@ module.exports = class GraphApi {
         language: {
           code: locale,
         },
-        components: [
-          {
-            type: "header",
-            parameters: [
-              {
-                type: "image",
-                image: {
-                  link: imageLink,
-                },
-              },
-            ],
-          },
-        ],
+        ...(components.length > 0 ? { components } : {}),
       },
     };
 
