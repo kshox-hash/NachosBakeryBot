@@ -4,27 +4,23 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 "use strict";
 
 module.exports = Object.freeze({
-  // Mensajes esperados del usuario
   USER_START_MESSAGE: "Toca enviar para comenzar",
 
-  // Mensajes de respuesta
-  APP_DEFAULT_MESSAGE: "¡Bienvenido a Automatiza fácil! ¿En qué podemos ayudarte hoy?",
+  APP_DEFAULT_MESSAGE: "¡Bienvenido a Automatiza Fácil! ¿En qué podemos ayudarte hoy?",
   APP_TRY_ANOTHER_MESSAGE: "¿Hay algo más en lo que podamos ayudarte?",
+  APP_CHATBOX_MESSAGE: "Cuéntanos qué necesitas automatizar y te ayudamos.",
+  APP_CONTACT_MESSAGE: "Si quieres más información, responde a este mensaje y te contactaremos.",
 
-  // Textos de botones (CTA)
-  REPLY_INTERACTIVE_WITH_MEDIA_CTA: "chatbox",
-  REPLY_MEDIA_CARD_CAROUSEL_CTA: "ver funciones",
-  REPLY_OFFER_CTA: "promociones",
+  REPLY_CHATBOX_CTA: "Chatbox",
+  REPLY_FUNCTIONS_CTA: "Funciones",
+  REPLY_CONTACT_CTA: "Contacto",
 
-  // IDs de botones de respuesta
-  REPLY_INTERACTIVE_MEDIA_ID: "reply-interactive-with-media",
-  REPLY_MEDIA_CAROUSEL_ID: "reply-media-card-carousel",
-  REPLY_OFFER_ID: "reply-offer",
+  REPLY_CHATBOX_ID: "reply-chatbox",
+  REPLY_FUNCTIONS_ID: "reply-functions",
+  REPLY_CONTACT_ID: "reply-contact",
 
-
-  FLOW_MAIN_QUOTE : "flow_main_quote"
+  FLOW_MAIN_QUOTE: "flow_main_quote",
 });

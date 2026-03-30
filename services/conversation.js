@@ -8,14 +8,18 @@
 "use strict";
 
 const constants = require("./constants");
-const config = require("./config");
-const GraphApi = require('./graph-api');
-const Message = require('./message');
-const Status = require('./status');
-const Cache = require('./redis');
+const GraphApi = require("./graph-api");
+const Message = require("./message");
+const Status = require("./status");
+const Cache = require("./redis");
 
-
-function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody) {
+// Mensaje de bienvenida con 3 botones
+function sendWelcomeMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber,
+  messageBody
+) {
   return GraphApi.messageWithInteractiveReply(
     messageId,
     senderPhoneNumberId,
@@ -23,109 +27,84 @@ function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNum
     messageBody,
     [
       {
-        id: constants.REPLY_INTERACTIVE_MEDIA_ID,
-        title: constants.REPLY_INTERACTIVE_WITH_MEDIA_CTA,
+        id: constants.REPLY_CHATBOX_ID,
+        title: constants.REPLY_CHATBOX_CTA,
       },
       {
-        id: constants.REPLY_MEDIA_CAROUSEL_ID,
-        title: constants.REPLY_MEDIA_CARD_CAROUSEL_CTA,
+        id: constants.REPLY_FUNCTIONS_ID,
+        title: constants.REPLY_FUNCTIONS_CTA,
       },
       {
-        id: constants.REPLY_OFFER_ID,
-        title: constants.REPLY_OFFER_CTA,
-      }
+        id: constants.REPLY_CONTACT_ID,
+        title: constants.REPLY_CONTACT_CTA,
+      },
     ]
   );
 }
 
-function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
+// Botón Funciones -> manda la plantilla aprobada generar_document
+function sendFunctionsTemplateMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
   return GraphApi.messageWithUtilityTemplate(
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "grocery_delivery_utility",
-      locale: "en_US",
-      imageLink: "https://scontent.xx.fbcdn.net/mci_ab/uap/asset_manager/id/?ab_b=e&ab_page=AssetManagerID&ab_entry=1530053877871776",
-    }
-  );
-}
-
-function sendLimitedTimeOfferMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
-  return GraphApi.messageWithLimitedTimeOfferTemplate(
-    messageId,
-    senderPhoneNumberId,
-    recipientPhoneNumber,
-    {
-      templateName: "strawberries_limited_offer",
-      locale: "en_US",
-      imageLink: "https://scontent.xx.fbcdn.net/mci_ab/uap/asset_manager/id/?ab_b=e&ab_page=AssetManagerID&ab_entry=1393969325614091",
-      offerCode: "BERRIES20",
-    }
-  );
-}
-
-function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
-  return GraphApi.messageWithMediaCardCarousel(
-    messageId,
-    senderPhoneNumberId,
-    recipientPhoneNumber,
-    {
-      templateName: "recipe_media_carousel",
-      locale: "en_US",
-      imageLinks: [
+      templateName: "generar_document",
+      locale: "es_ES",
+      imageLink:
         "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
-        "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png"
-      ]
     }
   );
 }
 
-function sendDefaultMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody){
+// Botón Chatbox
+function sendChatboxMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
   return GraphApi.messageWithInteractiveReply(
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
-    messageBody,
+    constants.APP_CHATBOX_MESSAGE,
     [
       {
-        id: constants.REPLY_INTERACTIVE_MEDIA_ID,
-        title: constants.REPLY_INTERACTIVE_WITH_MEDIA_CTA,
-      },
-        
-      {
-        id: constants.REPLY_MEDIA_CAROUSEL_ID,
-        title: constants.REPLY_MEDIA_CARD_CAROUSEL_CTA,
+        id: constants.REPLY_FUNCTIONS_ID,
+        title: constants.REPLY_FUNCTIONS_CTA,
       },
       {
-        id: constants.REPLY_OFFER_ID,
-        title: constants.REPLY_OFFER_CTA,
-      }
+        id: constants.REPLY_CONTACT_ID,
+        title: constants.REPLY_CONTACT_CTA,
+      },
     ]
   );
 }
 
-function sendMessageWithImgAndBtn(messageId, senderPhoneNumberId, recipientPhoneNumber) {
-  return GraphApi.messageWithImageAndButtons(
+// Botón Contacto
+function sendContactMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
+  return GraphApi.messageWithInteractiveReply(
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
-    "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
-    constants.APP_DEFAULT_MESSAGE,
-    "Selecciona una opción",
+    constants.APP_CONTACT_MESSAGE,
     [
       {
-        id: constants.FLOW_MAIN_QUOTE,
-        title: "Cotizar",
+        id: constants.REPLY_CHATBOX_ID,
+        title: constants.REPLY_CHATBOX_CTA,
       },
       {
-        id: constants.REPLY_INTERACTIVE_MEDIA_ID,
-        title: "Demo media",
+        id: constants.REPLY_FUNCTIONS_ID,
+        title: constants.REPLY_FUNCTIONS_CTA,
       },
-      {
-        id: constants.REPLY_MEDIA_CAROUSEL_ID,
-        title: "Carrusel",
-      }
     ]
   );
 }
@@ -133,11 +112,6 @@ function sendMessageWithImgAndBtn(messageId, senderPhoneNumberId, recipientPhone
 async function markMessageForFollowUp(messageId) {
   await Cache.insert(messageId);
 }
-
-//==========================================================================
-//CLASS
-//==========================================================================
-
 
 module.exports = class Conversation {
   constructor(phoneNumberId) {
@@ -148,64 +122,70 @@ module.exports = class Conversation {
     const message = new Message(rawMessage);
 
     switch (message.type) {
-      case constants.REPLY_INTERACTIVE_MEDIA_ID:
-        let interactiveMediaResponse = await sendInteractiveMediaMessage(
+      case constants.REPLY_FUNCTIONS_ID: {
+        const response = await sendFunctionsTemplateMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
-        await markMessageForFollowUp(interactiveMediaResponse.messages[0].id);
-        break;
-      case constants.REPLY_MEDIA_CAROUSEL_ID:
-        let mediaCarouselResponse = await sendMediaCarouselMessage(
-          message.id,
-          senderPhoneNumberId,
-          message.senderPhoneNumber
-        );
-        await markMessageForFollowUp(mediaCarouselResponse.messages[0].id);
-        break;
-      case constants.REPLY_OFFER_ID:
-        let ltoResponse = await sendLimitedTimeOfferMessage(
-          message.id,
-          senderPhoneNumberId,
-          message.senderPhoneNumber
-        );
-        await markMessageForFollowUp(ltoResponse.messages[0].id);
-        break;
-      default:
 
-      sendDefaultMessage(
-        message.id,
-        senderPhoneNumberId,
-        message.senderPhoneNumber,
-        constants.APP_DEFAULT_MESSAGE
-      )
-      /**
-       *   sendTryOutDemoMessage(
+        if (response?.messages?.[0]?.id) {
+          await markMessageForFollowUp(response.messages[0].id);
+        }
+        break;
+      }
+
+      case constants.REPLY_CHATBOX_ID: {
+        const response = await sendChatboxMessage(
+          message.id,
+          senderPhoneNumberId,
+          message.senderPhoneNumber
+        );
+
+        if (response?.messages?.[0]?.id) {
+          await markMessageForFollowUp(response.messages[0].id);
+        }
+        break;
+      }
+
+      case constants.REPLY_CONTACT_ID: {
+        const response = await sendContactMessage(
+          message.id,
+          senderPhoneNumberId,
+          message.senderPhoneNumber
+        );
+
+        if (response?.messages?.[0]?.id) {
+          await markMessageForFollowUp(response.messages[0].id);
+        }
+        break;
+      }
+
+      default: {
+        const response = await sendWelcomeMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
-          constanZts.APP_DEFAULT_MESSAGE
+          constants.APP_DEFAULT_MESSAGE
         );
-       
-       */
-      
+
+        if (response?.messages?.[0]?.id) {
+          await markMessageForFollowUp(response.messages[0].id);
+        }
         break;
+      }
     }
   }
 
   static async handleStatus(senderPhoneNumberId, rawStatus) {
     const status = new Status(rawStatus);
 
-    // Only handle delivered and read statuses
-    if (!(status.status === 'delivered' || status.status === 'read')) {
+    if (!(status.status === "delivered" || status.status === "read")) {
       return;
     }
 
-    // Only send a follow up message if the current message is flagged
-    // as needing one in the cache.
     if (await Cache.remove(status.messageId)) {
-      await sendTryOutDemoMessage(
+      await sendWelcomeMessage(
         undefined,
         senderPhoneNumberId,
         status.recipientPhoneNumber,
