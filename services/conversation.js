@@ -13,6 +13,9 @@ const Message = require("./message");
 const Status = require("./status");
 const QuoteFlow = require("./quote-flow");
 
+const RUNTIME_UI_BASE_URL =
+  process.env.RUNTIME_UI_BASE_URL || "http://localhost:3000";
+
 // MENSAJE DE BIENVENIDA
 function sendWelcomeMessage(
   messageId,
@@ -100,6 +103,23 @@ function sendContactMessage(
         title: constants.REPLY_FUNCTIONS_CTA,
       },
     ]
+  );
+}
+
+// NUEVO: LINK AL COTIZADOR
+function sendQuoteRuntimeLinkMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
+  const safeRecipient = String(recipientPhoneNumber || "").replace(/\D/g, "");
+  const url = `${RUNTIME_UI_BASE_URL}/open/cotizador/${safeRecipient}`;
+
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    `Perfecto. Abre este enlace para hacer tu cotización:\n${url}`
   );
 }
 
@@ -233,7 +253,7 @@ module.exports = class Conversation {
 
       default: {
         if (normalizedText === "cotizar" || normalizedText === "quote_start") {
-          return sendQuoteCatalogMessage(
+          return sendQuoteRuntimeLinkMessage(
             message.id,
             senderPhoneNumberId,
             message.senderPhoneNumber
@@ -281,7 +301,7 @@ module.exports = class Conversation {
         }
 
         if (QuoteFlow.isQuoteIntent(normalizedText)) {
-          return sendQuoteCatalogMessage(
+          return sendQuoteRuntimeLinkMessage(
             message.id,
             senderPhoneNumberId,
             message.senderPhoneNumber
