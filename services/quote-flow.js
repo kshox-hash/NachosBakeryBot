@@ -2,15 +2,6 @@
 
 /**
  * Flujo simple de cotización por módulos para WhatsApp.
- *
- * Idea:
- * 1) El usuario presiona "Cotizar"
- * 2) El bot envía el mensaje inicial con los módulos disponibles
- * 3) El usuario responde con números separados por coma, por ejemplo: 1,3,5
- * 4) Este archivo interpreta la selección y arma una cotización textual
- *
- * No depende de base de datos.
- * Puedes conectarlo después a tu Conversation / GraphApi.
  */
 
 const QUOTE_MODULES = Object.freeze([
@@ -69,7 +60,7 @@ const QUOTE_TEXTS = Object.freeze({
   welcome:
     "¡Perfecto! Aquí puedes cotizar módulos reales de Automatiza Fácil. Responde con los números de los módulos que te interesan separados por coma. Ejemplo: 1,2,5",
   footer:
-    "Si quieres, también puedes escribir tu rubro (por ejemplo: panadería, barbería, clínica, delivery) y te recomendamos una combinación.",
+    "También puedes escribir tu rubro y te recomiendo una combinación. Ejemplo: panadería, barbería, clínica o tienda.",
   invalid:
     "No pude reconocer tu selección. Responde con números separados por coma, por ejemplo: 1,3 o 2,4,5",
   empty:

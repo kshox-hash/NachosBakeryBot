@@ -9,15 +9,36 @@
 
 module.exports = class Message {
   constructor(rawMessage) {
-    this.id = rawMessage.id;
+    this.rawMessage = rawMessage;
+    this.id = rawMessage?.id;
+    this.senderPhoneNumber = rawMessage?.from;
 
-    let type = rawMessage.type;
-    if (type === 'interactive') {
-      this.type = rawMessage.interactive.button_reply.id;
-    } else {
-      this.type = 'unknown'
+    if (rawMessage?.type === "text") {
+      this.type = "text";
+      this.text = rawMessage?.text?.body || "";
+      return;
     }
 
-    this.senderPhoneNumber = rawMessage.from;
+    if (rawMessage?.type === "button") {
+      this.type = rawMessage?.button?.text || "";
+      this.text = rawMessage?.button?.text || "";
+      this.payload = rawMessage?.button?.payload || "";
+      return;
+    }
+
+    if (rawMessage?.type === "interactive") {
+      const buttonReply = rawMessage?.interactive?.button_reply;
+
+      if (buttonReply) {
+        this.type = buttonReply.id || buttonReply.title || "interactive_button";
+        this.text = buttonReply.title || buttonReply.id || "";
+        this.payload = buttonReply.id || "";
+        return;
+      }
+    }
+
+    this.type = rawMessage?.type || "unknown";
+    this.text = "";
+    this.payload = "";
   }
 };

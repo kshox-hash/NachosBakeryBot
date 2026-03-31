@@ -247,20 +247,6 @@ module.exports = class GraphApi {
                 });
               }
 
-              if (card.urlSuffix) {
-                cardComponents.push({
-                  type: "button",
-                  sub_type: "url",
-                  index: 0,
-                  parameters: [
-                    {
-                      type: "text",
-                      text: card.urlSuffix,
-                    },
-                  ],
-                });
-              }
-
               return {
                 card_index: idx,
                 components: cardComponents,
@@ -317,6 +303,26 @@ module.exports = class GraphApi {
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
 
+  static async sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    messageText
+  ) {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: recipientPhoneNumber,
+      type: "text",
+      text: {
+        preview_url: false,
+        body: messageText,
+      },
+    };
+
+    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+  }
+
   static async sendCarouselTemplate(
     messageId,
     senderPhoneNumberId,
@@ -332,7 +338,7 @@ module.exports = class GraphApi {
         cards: [
           {
             imageLink:
-              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/generatefix.png",
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
           },
           {
             imageLink:
@@ -346,24 +352,4 @@ module.exports = class GraphApi {
       }
     );
   }
-
-  static async sendTextMessage(
-  messageId,
-  senderPhoneNumberId,
-  recipientPhoneNumber,
-  messageText
-) {
-  const requestBody = {
-    messaging_product: "whatsapp",
-    recipient_type: "individual",
-    to: recipientPhoneNumber,
-    type: "text",
-    text: {
-      preview_url: false,
-      body: messageText,
-    },
-  };
-
-  return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
-}
 };

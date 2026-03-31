@@ -1,4 +1,5 @@
 "use strict";
+"use strict";
 
 module.exports = Object.freeze({
   USER_START_MESSAGE: "Toca enviar para comenzar",

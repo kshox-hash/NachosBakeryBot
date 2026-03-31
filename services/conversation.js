@@ -1,12 +1,19 @@
+/**
+ * Copyright 2021-present, Facebook, Inc. All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 "use strict";
 
 const constants = require("./constants");
 const GraphApi = require("./graph-api");
 const Message = require("./message");
 const Status = require("./status");
-const QuoteFlow = require("./quote_flow");
+const QuoteFlow = require("./quote-flow");
 
-// Mensaje de bienvenida con 3 botones
+// MENSAJE DE BIENVENIDA
 function sendWelcomeMessage(
   messageId,
   senderPhoneNumberId,
@@ -35,6 +42,7 @@ function sendWelcomeMessage(
   );
 }
 
+// FUNCIONES -> CARRUSEL
 function sendFunctionsTemplateMessage(
   messageId,
   senderPhoneNumberId,
@@ -47,6 +55,7 @@ function sendFunctionsTemplateMessage(
   );
 }
 
+// CHATBOX
 function sendChatboxMessage(
   messageId,
   senderPhoneNumberId,
@@ -70,6 +79,7 @@ function sendChatboxMessage(
   );
 }
 
+// CONTACTO
 function sendContactMessage(
   messageId,
   senderPhoneNumberId,
@@ -93,6 +103,7 @@ function sendContactMessage(
   );
 }
 
+// QUOTE FLOW
 function sendQuoteCatalogMessage(
   messageId,
   senderPhoneNumberId,
@@ -145,28 +156,57 @@ function sendBusinessRecommendationMessage(
   );
 }
 
+// OTROS FLUJOS
+function sendSupportMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    "Chat soporte: este módulo permite responder clientes, ordenar consultas y mejorar la atención por WhatsApp. Si quieres, te muestro precio, funciones o una propuesta para tu negocio."
+  );
+}
+
+function sendAppointmentsMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    "Toma de horas: este módulo permite reservar citas, agendar servicios y ordenar disponibilidad por WhatsApp. Si quieres, te muestro una propuesta o un precio estimado."
+  );
+}
+
+function getIncomingText(message) {
+  return String(message?.text || "").trim();
+}
+
 module.exports = class Conversation {
   constructor(phoneNumberId) {
     this.phoneNumberId = phoneNumberId;
   }
 
   static async handleMessage(senderPhoneNumberId, rawMessage) {
+    console.log("RAW MESSAGE =>");
+    console.log(JSON.stringify(rawMessage, null, 2));
+
     const message = new Message(rawMessage);
+    const incomingText = getIncomingText(message);
+    const normalizedText = incomingText.toLowerCase();
 
     console.log("message.type =>", message.type);
     console.log("message.text =>", message.text);
+    console.log("message.payload =>", message.payload);
     console.log("message.id =>", message.id);
     console.log("message.senderPhoneNumber =>", message.senderPhoneNumber);
 
     switch (message.type) {
-      case "quote_start": {
-        return sendQuoteCatalogMessage(
-          message.id,
-          senderPhoneNumberId,
-          message.senderPhoneNumber
-        );
-      }
-
       case constants.REPLY_FUNCTIONS_ID: {
         return sendFunctionsTemplateMessage(
           message.id,
@@ -192,25 +232,55 @@ module.exports = class Conversation {
       }
 
       default: {
-        if (QuoteFlow.isQuoteSelection(message.text)) {
+        if (normalizedText === "cotizar" || normalizedText === "quote_start") {
+          return sendQuoteCatalogMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber
+          );
+        }
+
+        if (
+          normalizedText === "chat soporte" ||
+          normalizedText === "support_start"
+        ) {
+          return sendSupportMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber
+          );
+        }
+
+        if (
+          normalizedText === "toma de horas" ||
+          normalizedText === "appointments_start"
+        ) {
+          return sendAppointmentsMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber
+          );
+        }
+
+        if (QuoteFlow.isQuoteSelection(normalizedText)) {
           return sendQuoteSummaryMessage(
             message.id,
             senderPhoneNumberId,
             message.senderPhoneNumber,
-            message.text
+            normalizedText
           );
         }
 
-        if (QuoteFlow.isBusinessRecommendationIntent(message.text)) {
+        if (QuoteFlow.isBusinessRecommendationIntent(normalizedText)) {
           return sendBusinessRecommendationMessage(
             message.id,
             senderPhoneNumberId,
             message.senderPhoneNumber,
-            message.text
+            normalizedText
           );
         }
 
-        if (QuoteFlow.isQuoteIntent(message.text)) {
+        if (QuoteFlow.isQuoteIntent(normalizedText)) {
           return sendQuoteCatalogMessage(
             message.id,
             senderPhoneNumberId,
@@ -230,6 +300,8 @@ module.exports = class Conversation {
 
   static async handleStatus(senderPhoneNumberId, rawStatus) {
     const status = new Status(rawStatus);
+
+    console.log("status recibido =>", status);
 
     if (!(status.status === "delivered" || status.status === "read")) {
       return;
