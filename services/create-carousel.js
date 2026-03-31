@@ -6,6 +6,7 @@ const axios = require("axios");
 const ACCESS_TOKEN = "EAANZAZBf2B3EgBQ5wZBHCKMZBirpM2IKqm9ToobnV4MXhBzx7qd45PY1QRIITXQ0E3fUYZA98pZAAzLZCdanijOIqCLZB3haEEVEpOEEuW2c8vHVDOfDZCOmNoezNLjNB2vshDzi6JUfxEktzdhY6O2pw2lbUKeqVN2IVjbmBorDakPhh3fplIJjZBH1z9fws4EAZDZD";
 const APP_ID = 943355165006920;
 const WABA_ID = 972355185253738;
+const PUBLIC_BASE_URL = "https://runtimegenerateui.onrender.com"
 
 async function getFileSize(filePath) {
   return fs.statSync(filePath).size;
@@ -23,7 +24,7 @@ async function createUploadSession(filePath) {
 
   const res = await axios.post(url, null, {
     headers: {
-      Authorization: `OAuth ${ACCESS_TOKEN}`,
+      Authorization: `Bearer ${ACCESS_TOKEN}`,
     },
   });
 
@@ -38,7 +39,7 @@ async function uploadFileAndGetHandle(uploadId, filePath) {
     fileBuffer,
     {
       headers: {
-        Authorization: `OAuth ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
         offset: "0",
         "Content-Type": "application/octet-stream",
       },
@@ -56,8 +57,13 @@ async function uploadFileAndGetHandle(uploadId, filePath) {
 }
 
 async function createCarouselTemplate(headerHandle) {
+  if (!ACCESS_TOKEN) throw new Error("Falta ACCESS_TOKEN en .env");
+  if (!APP_ID) throw new Error("Falta APP_ID en .env");
+  if (!WABA_ID) throw new Error("Falta WABA_ID en .env");
+  if (!PUBLIC_BASE_URL) throw new Error("Falta PUBLIC_BASE_URL en .env");
+
   const payload = {
-    name: "automatiza_carousel_v2",
+    name: "automatiza_carousel_v3",
     language: "es",
     category: "MARKETING",
     components: [
@@ -79,14 +85,16 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Cotiza módulos reales para tu negocio y recibe una propuesta rápida.",
+                text: "Genera cotizaciones y PDFs automáticamente desde el chat. Ahora prueba una cotización interactiva.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "QUICK_REPLY",
+                    type: "URL",
                     text: "Cotizar",
+                    url: `${PUBLIC_BASE_URL}/open/cotizador/{{1}}`,
+                    example: ["lead-demo-001"],
                   },
                 ],
               },
@@ -103,14 +111,16 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Activa un chat soporte para responder clientes y ordenar consultas.",
+                text: "Automatiza la toma de horas y reservas por WhatsApp para que tus clientes agenden fácil y rápido.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "QUICK_REPLY",
-                    text: "Chat soporte",
+                    type: "URL",
+                    text: "Tomar hora",
+                    url: `${PUBLIC_BASE_URL}/open/reservas/{{1}}`,
+                    example: ["lead-demo-002"],
                   },
                 ],
               },
@@ -127,14 +137,16 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Automatiza la toma de horas y reservas por WhatsApp.",
+                text: "Activa un chatbot para responder consultas, ordenar conversaciones y atender clientes automáticamente.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "QUICK_REPLY",
-                    text: "Toma de horas",
+                    type: "URL",
+                    text: "Ver chatbot",
+                    url: `${PUBLIC_BASE_URL}/open/chatbot/{{1}}`,
+                    example: ["lead-demo-003"],
                   },
                 ],
               },

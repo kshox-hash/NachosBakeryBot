@@ -247,6 +247,20 @@ module.exports = class GraphApi {
                 });
               }
 
+              if (card.buttonUrlSuffix) {
+                cardComponents.push({
+                  type: "button",
+                  sub_type: "url",
+                  index: 0,
+                  parameters: [
+                    {
+                      type: "text",
+                      text: card.buttonUrlSuffix,
+                    },
+                  ],
+                });
+              }
+
               return {
                 card_index: idx,
                 components: cardComponents,
@@ -328,25 +342,30 @@ module.exports = class GraphApi {
     senderPhoneNumberId,
     recipientPhoneNumber
   ) {
+    const safeRecipient = String(recipientPhoneNumber || "").replace(/\D/g, "");
+
     return this.messageWithMediaCardCarousel(
       messageId,
       senderPhoneNumberId,
       recipientPhoneNumber,
       {
-        templateName: "automatiza_carousel_v2",
+        templateName: "automatiza_carousel_v3",
         locale: "es",
         cards: [
           {
             imageLink:
-              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+              "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/generatefix.png",
+            buttonUrlSuffix: safeRecipient || "lead-demo-001",
           },
           {
             imageLink:
               "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+            buttonUrlSuffix: safeRecipient || "lead-demo-002",
           },
           {
             imageLink:
               "https://pub-9df4bc34eee249debc0d04d6df729879.r2.dev/avatar.png",
+            buttonUrlSuffix: safeRecipient || "lead-demo-003",
           },
         ],
       }
