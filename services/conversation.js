@@ -1,16 +1,10 @@
-/**
- * Copyright 2021-present, Facebook, Inc. All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 "use strict";
 
 const constants = require("./constants");
 const GraphApi = require("./graph-api");
 const Message = require("./message");
 const Status = require("./status");
+const QuoteFlow = require("./quote-flow");
 
 // Mensaje de bienvenida con 3 botones
 function sendWelcomeMessage(
@@ -41,7 +35,6 @@ function sendWelcomeMessage(
   );
 }
 
-// Botón Funciones -> manda el carrusel aprobado
 function sendFunctionsTemplateMessage(
   messageId,
   senderPhoneNumberId,
@@ -54,7 +47,6 @@ function sendFunctionsTemplateMessage(
   );
 }
 
-// Botón Chatbox
 function sendChatboxMessage(
   messageId,
   senderPhoneNumberId,
@@ -78,7 +70,6 @@ function sendChatboxMessage(
   );
 }
 
-// Botón Contacto
 function sendContactMessage(
   messageId,
   senderPhoneNumberId,
@@ -102,6 +93,58 @@ function sendContactMessage(
   );
 }
 
+function sendQuoteCatalogMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber
+) {
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    QuoteFlow.getQuoteCatalogText()
+  );
+}
+
+function sendQuoteSummaryMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber,
+  userText
+) {
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    QuoteFlow.buildQuoteSummary(userText)
+  );
+}
+
+function sendBusinessRecommendationMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber,
+  userText
+) {
+  const suggestion = QuoteFlow.suggestModulesByBusiness(userText);
+
+  if (!suggestion) {
+    return GraphApi.sendTextMessage(
+      messageId,
+      senderPhoneNumberId,
+      recipientPhoneNumber,
+      "Cuéntame tu rubro y te recomiendo un pack. Ejemplo: panadería, barbería, clínica o tienda."
+    );
+  }
+
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    suggestion
+  );
+}
+
 module.exports = class Conversation {
   constructor(phoneNumberId) {
     this.phoneNumberId = phoneNumberId;
@@ -111,69 +154,82 @@ module.exports = class Conversation {
     const message = new Message(rawMessage);
 
     console.log("message.type =>", message.type);
+    console.log("message.text =>", message.text);
     console.log("message.id =>", message.id);
     console.log("message.senderPhoneNumber =>", message.senderPhoneNumber);
 
     switch (message.type) {
-      case constants.REPLY_FUNCTIONS_ID: {
-        console.log("Entró a REPLY_FUNCTIONS_ID");
-
-        const response = await sendFunctionsTemplateMessage(
+      case "quote_start": {
+        return sendQuoteCatalogMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
+      }
 
-        console.log("response funciones =>", response);
-        break;
+      case constants.REPLY_FUNCTIONS_ID: {
+        return sendFunctionsTemplateMessage(
+          message.id,
+          senderPhoneNumberId,
+          message.senderPhoneNumber
+        );
       }
 
       case constants.REPLY_CHATBOX_ID: {
-        console.log("Entró a REPLY_CHATBOX_ID");
-
-        const response = await sendChatboxMessage(
+        return sendChatboxMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
-
-        console.log("response chatbox =>", response);
-        break;
       }
 
       case constants.REPLY_CONTACT_ID: {
-        console.log("Entró a REPLY_CONTACT_ID");
-
-        const response = await sendContactMessage(
+        return sendContactMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
-
-        console.log("response contacto =>", response);
-        break;
       }
 
       default: {
-        console.log("Entró a default");
+        if (QuoteFlow.isQuoteSelection(message.text)) {
+          return sendQuoteSummaryMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber,
+            message.text
+          );
+        }
 
-        const response = await sendWelcomeMessage(
+        if (QuoteFlow.isBusinessRecommendationIntent(message.text)) {
+          return sendBusinessRecommendationMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber,
+            message.text
+          );
+        }
+
+        if (QuoteFlow.isQuoteIntent(message.text)) {
+          return sendQuoteCatalogMessage(
+            message.id,
+            senderPhoneNumberId,
+            message.senderPhoneNumber
+          );
+        }
+
+        return sendWelcomeMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
           constants.APP_DEFAULT_MESSAGE
         );
-
-        console.log("response bienvenida =>", response);
-        break;
       }
     }
   }
 
   static async handleStatus(senderPhoneNumberId, rawStatus) {
     const status = new Status(rawStatus);
-
-    console.log("status recibido =>", status);
 
     if (!(status.status === "delivered" || status.status === "read")) {
       return;

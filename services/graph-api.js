@@ -346,4 +346,24 @@ module.exports = class GraphApi {
       }
     );
   }
+
+  static async sendTextMessage(
+  messageId,
+  senderPhoneNumberId,
+  recipientPhoneNumber,
+  messageText
+) {
+  const requestBody = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: recipientPhoneNumber,
+    type: "text",
+    text: {
+      preview_url: false,
+      body: messageText,
+    },
+  };
+
+  return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+}
 };

@@ -4,7 +4,7 @@ const path = require("path");
 const axios = require("axios");
 
 const ACCESS_TOKEN = "EAANZAZBf2B3EgBQ5wZBHCKMZBirpM2IKqm9ToobnV4MXhBzx7qd45PY1QRIITXQ0E3fUYZA98pZAAzLZCdanijOIqCLZB3haEEVEpOEEuW2c8vHVDOfDZCOmNoezNLjNB2vshDzi6JUfxEktzdhY6O2pw2lbUKeqVN2IVjbmBorDakPhh3fplIJjZBH1z9fws4EAZDZD";
-const APP_ID = 943355165006920;   // no WABA_ID
+const APP_ID = 943355165006920;
 const WABA_ID = 972355185253738;
 
 async function getFileSize(filePath) {
@@ -21,17 +21,13 @@ async function createUploadSession(filePath) {
     `&file_length=${fileLength}` +
     `&file_type=image/png`;
 
-  const res = await axios.post(
-    url,
-    null,
-    {
-      headers: {
-        Authorization: `OAuth ${ACCESS_TOKEN}`,
-      },
-    }
-  );
+  const res = await axios.post(url, null, {
+    headers: {
+      Authorization: `OAuth ${ACCESS_TOKEN}`,
+    },
+  });
 
-  return res.data.id; // upload:<id>
+  return res.data.id;
 }
 
 async function uploadFileAndGetHandle(uploadId, filePath) {
@@ -51,7 +47,9 @@ async function uploadFileAndGetHandle(uploadId, filePath) {
   );
 
   if (!res.data?.h) {
-    throw new Error(`No llegó media handle. Respuesta: ${JSON.stringify(res.data)}`);
+    throw new Error(
+      `No llegó media handle. Respuesta: ${JSON.stringify(res.data)}`
+    );
   }
 
   return res.data.h;
@@ -59,13 +57,13 @@ async function uploadFileAndGetHandle(uploadId, filePath) {
 
 async function createCarouselTemplate(headerHandle) {
   const payload = {
-    name: "automatiza_carousel",
+    name: "automatiza_carousel_v2",
     language: "es",
     category: "MARKETING",
     components: [
       {
         type: "BODY",
-        text: "Conoce algunas funciones de Automatiza Fácil",
+        text: "Elige el módulo que quieres probar en Automatiza Fácil",
       },
       {
         type: "CAROUSEL",
@@ -81,15 +79,14 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Automatiza respuestas y atención al cliente 24/7",
+                text: "Cotiza módulos reales para tu negocio y recibe una propuesta rápida.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "URL",
-                    text: "Ver más",
-                    url: "https://automatizafacil.cl/chatbot",
+                    type: "QUICK_REPLY",
+                    text: "Cotizar",
                   },
                 ],
               },
@@ -106,15 +103,14 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Envía cotizaciones automáticas en PDF por WhatsApp",
+                text: "Activa un chat soporte para responder clientes y ordenar consultas.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "URL",
-                    text: "Cotizaciones",
-                    url: "https://automatizafacil.cl/cotizaciones",
+                    type: "QUICK_REPLY",
+                    text: "Chat soporte",
                   },
                 ],
               },
@@ -131,15 +127,14 @@ async function createCarouselTemplate(headerHandle) {
               },
               {
                 type: "BODY",
-                text: "Gestiona reservas y toma de horas automáticamente",
+                text: "Automatiza la toma de horas y reservas por WhatsApp.",
               },
               {
                 type: "BUTTONS",
                 buttons: [
                   {
-                    type: "URL",
-                    text: "Reservas",
-                    url: "https://automatizafacil.cl/reservas",
+                    type: "QUICK_REPLY",
+                    text: "Toma de horas",
                   },
                 ],
               },
