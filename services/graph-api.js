@@ -327,7 +327,7 @@ module.exports = class GraphApi {
       senderPhoneNumberId,
       recipientPhoneNumber,
       {
-        templateName: "automatiza_carousel",
+        templateName: "automatiza_carousel_v2",
         locale: "es",
         cards: [
           {
