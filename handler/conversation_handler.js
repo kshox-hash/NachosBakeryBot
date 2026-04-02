@@ -1,5 +1,5 @@
 
-const constants = require("../constants")
+const constants = require("../contants")
 const MessageService = require("../service/message_service")
 const Message = require("../message")
 const Status = require("../status")
