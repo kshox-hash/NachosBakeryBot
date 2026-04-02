@@ -4,7 +4,6 @@ const MessageService = require("../service/message_service")
 const Message = require("../message")
 const Status = require("../status")
 
-
 //helper
 function getIncomingText(message) {
   return String(message?.text || "").trim();
@@ -67,7 +66,8 @@ module.exports = class  ConversationHandler {
           normalizedText === "chat soporte" ||
           normalizedText === "support_start"
         ) {
-          return sendSupportMessage(
+          
+          return MessageService.sendSupportMessage(
             message.id,
             senderPhoneNumberId,
             message.senderPhoneNumber
@@ -78,6 +78,7 @@ module.exports = class  ConversationHandler {
           normalizedText === "toma de horas" ||
           normalizedText === "appointments_start"
         ) {
+
           return MessageService.sendAppointmentsMessage(
             message.id,
             senderPhoneNumberId,
