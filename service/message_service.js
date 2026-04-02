@@ -3,6 +3,8 @@ const GraphApi = require("../graph/graph_api");
 const RUNTIME_UI_BASE_URL =
   process.env.RUNTIME_UI_BASE_URL || "http://localhost:3000";
 
+const constants = require("../constants");
+
 module.exports = class MessageService {
     constructor(){}
 
